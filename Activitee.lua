@@ -291,12 +291,10 @@ end
 ---
 --
 function DistanceCheck()
-    fnDistanceCheck = nil
-
-    local player_position = Player.GetPosition()
+    fnDistanceCheck         = nil
+    local player_position   = Player.GetPosition()
 
     if ( Vec3.Distance( player_position, kPlayerPosition ) > 1 ) then
-        Debug.Log( "Running Distance Check" )
         for _,activity_display in pairs( kActivityDisplay ) do
             if ( activity_display:GetWidget() ) then
                 local min_distance = 9999  --TODO: make this tweakable?
@@ -322,7 +320,7 @@ function DistanceCheck()
         kPlayerPosition = player_position
     end
 
-    fnDistanceCheck = callback( DistanceCheck, nil, skDistanceUpdateRate )
+    fnDistanceCheck     = callback( DistanceCheck, nil, skDistanceUpdateRate )
 end
 
 --- Removes all childen of parent

@@ -45,10 +45,12 @@
 
     <BluePrints>
         <BluePrint name="Label" instantiable="true">
+            <StillArt dimensions="left:0; right:100%+140t; top:-6; bottom:100%+1t"
+                      style="texture:gradients; region:white_right; alpha:0.65; tint:#000000"/>
             <StillArt dimensions="left:-10%; right:100%+70t; top:120%; bottom:130%"
                       style="texture:gradients; region:white_right; tint:#ffffff; alpha:1; shadow:0.5"/>
             <Text name="Label" dimensions="dock:fill"
-                  style="font:Demi_11; halign:right; valign:center; wrap:false; padding:0"/>
+                  style="font:UbuntuMedium_12; halign:right; valign:center; wrap:false; padding:0"/>
         </BluePrint>
 
         <BluePrint name="ObjectiveLabel" instantiable="true">
@@ -61,16 +63,12 @@
         </BluePrint>
 
         <BluePrint name="DistanceLabel" instantiable="true">
-            <StillArt dimensions="left:20%; right:80%; top:20%; bottom:80%"
-                      style="texture:PanelParts; region:Circle_White; alpha:0.5; tint:#000000; shadow:0.5;"/>
             <Text name="Label" dimensions="dock:fill"
                   style="font:Demi_11; halign:center; valign:center; wrap:false; padding:0"/>
         </BluePrint>
 
         <BluePrint name="Activity" instantiable="true">
-            <StillArt dimensions="left:0; right:88%; top:5; bottom:33%"
-                      style="texture:gradients; region:white_right; alpha:0.65; tint:#000000"/>
-            <Group name="DistanceGroup" dimensions="top:42; bottom:90%; right:100%; width:50" blueprint="DistanceLabel"
+            <Group name="DistanceGroup" dimensions="top:35; aspect:1; right:100%; width:50" blueprint="DistanceLabel"
                    style="visible:false"/>
             <Group name="IconGroup" dimensions="top:0; aspect:1; right:100%; width:48">
                 <Group name="LabelGroup" dimensions="right:0; width:20; center-y:33%; height:16" blueprint="Label"
@@ -89,34 +87,18 @@
         <HUDFrame name="Main" dimensions="right:100%; width:200; top:16%-95; height:460" visible="true">
             <Children>
                 <Group id="GoalMainGroup" dimensions="left:0; width:200; top:0; bottom:106" style="visible:false">
-                    <Group id="GoalLabel" dimensions="right:100%-10; left:0; top:0; height:22" blueprint="Label"/>
-                    <Group dimensions="right:100%-4; width:72; bottom:100%-8; aspect:1">
+                   <Group  dimensions="right:100%-4; width:72; bottom:100%-8; aspect:1">
+                        <Group id="GoalLabel" dimensions="right:5; width:20; center-y:20%; height:16" blueprint="Label"/>
                         <StillArt dimensions="dock:fill"
-                                  style="texture:PanelParts; region:Circle_White; tint:#002244; alpha:0.4;"/>
+                                  style="texture:PanelParts; region:Circle_White; tint:#000000; alpha:1;"/>
                         <StillArt dimensions="dock:fill" style="texture:IconBorder; shadow:0.1"/>
                         <WebImage id="GoalIcon" dimensions="center-x:50%; center-y:50%; aspect:1; width:94%"
                                   style="fixed-bounds:true; alpha:0.8;"/>
+                        <Group id="GoalList" dimensions="top:22; bottom:100%; right:100%-90; width:100%"/>
                     </Group>
                 </Group>
 
-                <Group id="GoalDetailGroup" dimensions="left:200; right:100%; top:0; bottom:100%"
-                       style="clip-children:true">
-                    <Group dimensions="left:0; right:100%; top:0; bottom:60">
-                        <StillArt dimensions="dock:fill" style="texture:colors; region:black; alpha:0.6; shadow:1"/>
-                        <Text dimensions="left:10; right:100%-10; top:10; bottom:30"
-                              style="font:UbuntuBold_9; halign:left; valign:center;" key="BUILD_PLAN"/>
-                        <Text id="ShoppingItemName" dimensions="left:10; right:100%-10; top:30; bottom:50"
-                              style="font:UbuntuMedium_9; halign:left; valign:center;"/>
-                    </Group>
-                    <Group dimensions="left:0; right:100%; top:66; bottom:100%">
-                        <StillArt dimensions="dock:fill" style="texture:colors; region:black; alpha:0.6; shadow:1"/>
-                        <Text dimensions="left:10; right:100%-10; top:10; bottom:30"
-                              style="font:UbuntuBold_9; halign:left; valign:center;" key="REQUIRED_MATERIALS"/>
-                        <ListLayout id="GoalList" dimensions="right:100%-10; left:10; top:30; bottom:100%-10"/>
-                    </Group>
-                </Group>
-
-                <Group id="ActivityMainGroup" dimensions="left:0; width:200; top:106; bottom:100%"
+                <Group id="ActivityMainGroup" dimensions="left:0; width:200; top:140; bottom:100%"
                        style="visible:false">
                     <!--<Group id="ActivityLabel" dimensions="right:100%-10; left:0; top:0; height:22" blueprint="Label"/>-->
                     <Group id="Activities" dimensions="right:100%-10; left:0; top:22; bottom:100%"/>

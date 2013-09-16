@@ -3,7 +3,8 @@
 -- @Date: 9/15/13
 --
 
-local bpGoalEntry   = [=[<Text dimensions="left:0; right:100%; top:0; height:18" style="font:UbuntuMedium_9; valign:center"/>]=]
+local skObjectiveId = "ObjectiveLabel"
+local skLabelId     = "Label"
 
 GoalEntry           = {}
 GoalEntry.__index   = GoalEntry
@@ -14,7 +15,10 @@ function GoalEntry.new( pLabel, pComplete, pParent )
     local self      = setmetatable( { }, GoalEntry )
     self.mParent    = pParent
     self.mComplete  = false
-    self.mWidget    = Component.CreateWidget( bpGoalEntry, pParent )
+    self.mWidget    = Component.CreateWidget( skObjectiveId, pParent )
+    self.mLabel     = self.mWidget:GetChild( skLabelId )
+
+    self.mLabel:SetFont( "UbuntuRegular_10" )
 
     self:SetLabel( pLabel )
     self:SetComplete( pComplete )
@@ -28,9 +32,9 @@ end
 function GoalEntry:SetComplete( pComplete )
     if ( self.mComplete ~= pComplete ) then
         if ( pComplete ) then
-            self.mWidget:SetTextColor( "#888888" ) --TODO: make tweakable?
+            self.mLabel:SetTextColor( "#888888" ) --TODO: make tweakable?
         else
-            self.mWidget:SetTextColor( "#FFFFFF" )
+            self.mLabel:SetTextColor( "#FFFFFF" )
         end
 
         self.mComplete = pComplete
@@ -41,11 +45,27 @@ end
 -- @param pText
 --
 function GoalEntry:SetLabel( pText )
-    self.mWidget:SetText( tostring( pText ) )
+    self.mLabel:SetText( tostring( pText ) )
+
+    local dimensions    = self.mLabel:GetTextDims()
+    self.mWidget:SetDims( "right:_; width:" .. dimensions.width .. "; center-y:_; height:" .. dimensions.height )
 end
 
 --- Wrapper
 --
 function GoalEntry:GetTextDims()
-    return self.mWidget:GetTextDims()
+    return self.mLabel:GetTextDims()
+end
+
+--- Wrapper
+--
+function GoalEntry:GetBounds()
+    return self.mWidget:GetBounds()
+end
+
+--- Wrapper
+-- @param ...
+--
+function GoalEntry:SetDims( ... )
+    self.mWidget:SetDims( ... )
 end

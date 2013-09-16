@@ -15,48 +15,30 @@ local skActivityMainGroupId = "ActivityMainGroup"
 local skGoalIconId          = "GoalIcon"
 local skGoalLabelId         = "GoalLabel"
 local skGoalMainGroupId     = "GoalMainGroup"
-local skGoalDetailGroupId   = "GoalDetailGroup"
-local skShoppingItemNameId  = "ShoppingItemName"
 local skGoalListId          = "GoalList"
 local skLabelId             = "Label"
 local skDistanceUpdateRate  = 0.1
 local skMinDistance         = 5
 local skMaxDistance         = 10
 
-local kSinView
-local kShoppingItemName
-local kGoalDetailGroup
-local kGoalIcon
-local kGoalList
-local kGoalMainGroup
-local kGoalLabel
-local kComponentFrame
-local kActivityMainGroup
-local kActivitiesWidget
-local kShoppingList
+local kComponentFrame       = Component.GetFrame( skMainFrameId )
+local kActivityMainGroup    = Component.GetWidget( skActivityMainGroupId )
+local kActivitiesWidget     = Component.GetWidget( skActivitiesId )
+local kGoalMainGroup        = Component.GetWidget( skGoalMainGroupId )
+local kGoalIcon             = Component.GetWidget( skGoalIconId )
+local kGoalList             = Component.GetWidget( skGoalListId )
+local kGoalLabel            = Component.GetWidget( skGoalLabelId )
+local kShoppingList         = {}
 local kActivityData         = {}
 local kActivityDisplay      = {}
+local kSinView              = false
 local fnDistanceCheck
-local kGoalWidth
 local kGoalIndent           = -1
 local kPlayerPosition       = { x = 0, y = 0, z = 0 }
 
 function Initialize()
     Debug.EnableLogging( true )
     Debug.Log( "INITIALIZE" )
-    kComponentFrame         = Component.GetFrame( skMainFrameId )
-    kActivityMainGroup      = Component.GetWidget( skActivityMainGroupId )
-    kActivitiesWidget       = Component.GetWidget( skActivitiesId )
-
-    kGoalMainGroup          = Component.GetWidget( skGoalMainGroupId )
-    kGoalIcon               = Component.GetWidget( skGoalIconId )
-    kGoalLabel              = Component.GetWidget( skGoalLabelId )
-
-    kGoalDetailGroup        = Component.GetWidget( skGoalDetailGroupId )
-    kGoalList               = Component.GetWidget( skGoalListId )
-    kShoppingItemName       = Component.GetWidget( skShoppingItemNameId )
-
-    SetLabelText( kGoalLabel:GetChild( skLabelId ), Component.LookupText( "CURRENT_GOAL" ), "right" )
 end
 
 --- Unique ID for actitivies
@@ -215,7 +197,6 @@ end
 --
 function OnSinView( pArgs )
     kSinView = pArgs.sinView
-    AdjustWidth()
 end
 
 ---
@@ -281,21 +262,17 @@ end
 --
 function OnShoppingListUpdated( pArgs )
     kShoppingList   = Player.GetShoppingList()
-    kGoalWidth      = 150 --TODO: make this tweakable?
 
     if ( kShoppingList and kShoppingList[ 1 ] ) then
         local item_info = Game.GetItemInfoByType( kShoppingList[ 1 ].item_id )
-
-        Debug.Table( "Item Info", item_info )
-        Debug.Log( tostring(kShoppingItemName:IsVisible()) )
-
         kGoalIcon:SetUrl( item_info.web_icon )
-        kShoppingItemName:SetText( item_info.name )
-
-        kGoalWidth = math.max( kGoalWidth, kShoppingItemName:GetTextDims().width )
+        SetLabelText( kGoalLabel:GetChild( skLabelId ), item_info.name, "right" )
 
         CreateShoppingList()
         kGoalMainGroup:Show()
+
+        local dimensions    = kGoalList:GetDims( true )
+        kActivityMainGroup:MoveTo( "left:0; width:200; center-y:_; bottom:100%; top:" .. dimensions.bottom.offset, 2, 0, "ease-in" )
     else
         kShoppingList = nil
         RemoveAllChildren( kGoalList )
@@ -348,23 +325,6 @@ function DistanceCheck()
     fnDistanceCheck = callback( DistanceCheck, nil, skDistanceUpdateRate )
 end
 
----
---
-function AdjustWidth()
-    local duration = 0.2 --TODO: make this tweakable?
-
-    if ( kSinView ) then
-        if ( kShoppingList ) then
-            kComponentFrame:MoveTo( "right:_; width:" .. kGoalWidth + 230, duration, 0, "ease-in" )
-            kGoalDetailGroup:SetParam( "alpha", 0 )
-            kGoalDetailGroup:ParamTo( "alpha", 1, duration, duration )
-        end
-    else
-        kGoalDetailGroup:ParamTo( "alpha", 0, duration, 0 )
-        kComponentFrame:MoveTo( "right:_; width:200", duration, duration, "ease-out" )
-    end
-end
-
 --- Removes all childen of parent
 -- @param pParent
 --
@@ -380,7 +340,6 @@ function CreateShoppingList()
     RemoveAllChildren( kGoalList )
     kGoalIndent = -1
     ProcessBluePrint( kShoppingList[ 1 ] )
-    kGoalDetailGroup:SetDims( "top:_; height:" .. kGoalList:GetChildCount() * 18 + 106 )
 end
 
 --- Process & Create entries for each item
@@ -446,8 +405,15 @@ function CreateGoalEntry( pLabel, pComplete )
         pLabel = " " .. pLabel
     end
 
-    local goal = GoalEntry( pLabel, pComplete, kGoalList )
-    kGoalWidth = math.max( kGoalWidth, goal:GetTextDims().width )
+    --feels gross to just new this up
+    local obj       = GoalEntry( pLabel, pComplete, kGoalList )
+    local count     = kGoalList:GetChildCount()
+    local height    = obj:GetBounds().height
+
+    obj:SetDims( "height:_; center-y:" .. count * height * 2 )
+
+    kGoalList:SetDims( "top:_; height:" .. ( count * height * 2 ) + 54 )
+    kGoalList:Show()
 end
 
 --- Sets text and changes parent dims.

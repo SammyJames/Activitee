@@ -103,7 +103,7 @@ function RemoveActivity( pActivity )
     local key = UID( pActivity )
 
     if ( kActivityDisplay[ key ] ) then
-        Component.RemoveWidget( kActivityDisplay[ key ].mGroup )
+        Component.RemoveWidget( kActivityDisplay[ key ]:GetWidget() )
         kActivityDisplay[ key ] = nil
     end
 
@@ -321,10 +321,10 @@ function DistanceCheck()
     if ( Vec3.Distance( player_position, kPlayerPosition ) > 1 ) then
         Debug.Log( "Running Distance Check" )
         for _,activity_display in pairs( kActivityDisplay ) do
-            if ( activity_display.mGroup ) then
+            if ( activity_display:GetWidget() ) then
                 local min_distance = 9999  --TODO: make this tweakable?
 
-                for _, tbl in ipairs( activity_display.mMarkers ) do
+                for _, tbl in ipairs( activity_display:GetMarkers() ) do
                     if ( tbl.marker ) then
                         local distance  = Vec3.Distance( player_position, tbl.waypoint )
                         min_distance    = math.min( min_distance, distance )

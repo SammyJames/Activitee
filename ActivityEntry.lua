@@ -41,17 +41,17 @@ function ActivityEntry.new( pActivity, pUID, pParent )
     self.mParent        = pParent
     self.mFullHeight    = 0
 
-    self.mGroup         = Component.CreateWidget( skActivityTypeId, pParent )
-    self.mGroup:SetDims( "top:_; height:48" )
+    self.mWidget         = Component.CreateWidget( skActivityTypeId, pParent )
+    self.mWidget:SetDims( "top:_; height:48" )
 
-    self.mIconGroup     = self.mGroup:GetChild( skIconGroupId )
+    self.mIconGroup     = self.mWidget:GetChild( skIconGroupId )
     self.mLabelGroup    = self.mIconGroup:GetChild( skLabelGroupId )
     self.mLabel         = self.mLabelGroup:GetChild( skLabelId )
 
     self.mMultiArt      = MultiArt.Create( self.mIconGroup:GetChild( skIconId ) )
-    self.mDistanceGroup = self.mGroup:GetChild( skDistanceGroupId )
+    self.mDistanceGroup = self.mWidget:GetChild( skDistanceGroupId )
     self.mDistance      = self.mDistanceGroup:GetChild( skLabelId )
-    self.mObjectives    = self.mGroup:GetChild( skObjectivesId )
+    self.mObjectives    = self.mWidget:GetChild( skObjectivesId )
     self.mMarkers       = {}
 
     self.mDistance:SetFont( "UbuntuBold_8" )
@@ -120,6 +120,18 @@ end
 --
 function ActivityEntry:SetActivityData( pActivity )
     self.mActivityData = pActivity
+end
+
+--- Gets mWidget
+--
+function ActivityEntry:GetWidget()
+    return self.mWidget
+end
+
+--- Gets mMarkers
+--
+function ActivityEntry:GetMarkers()
+    return self.mMarkers
 end
 
 --- Get the number of markers
@@ -199,23 +211,23 @@ end
 -- @param ...
 --
 function ActivityEntry:MoveTo( ... )
-    self.mGroup:MoveTo( ... )
+    self.mWidget:MoveTo( ... )
 end
 --- Wrapper
 --
 function ActivityEntry:Show()
-    self.mGroup:Show()
+    self.mWidget:Show()
 end
 
 --- Wrapper
 --
 function ActivityEntry:Hide()
-    self.mGroup:Hide()
+    self.mWidget:Hide()
 end
 
 --- Wrapper
 -- @param ...
 --
 function ActivityEntry:SetDims( ... )
-    self.mGroup:SetDims( ... )
+    self.mWidget:SetDims( ... )
 end

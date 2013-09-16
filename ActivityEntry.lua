@@ -14,14 +14,16 @@ local skDistanceGroupId = "DistanceGroup"
 local skObjectivesId    = "ObjectiveList"
 
 local eMission          = "Mission"
-local eEncounter        = "Encounter"
-local eAchievement      = "Achievement"
-local eOutpost          = "Outpost"
-local eResourceNode     = "ResourceNode"
-local eInstanceStep     = "InstanceStep"
+--[[
+-- local eEncounter        = "Encounter"
+-- local eAchievement      = "Achievement"
+-- local eOutpost          = "Outpost"
+-- local eResourceNode     = "ResourceNode"
+-- local eInstanceStep     = "InstanceStep"
+--]]
 
 local bpMarker          = [=[<MapMarker name="Marker" dimensions="center-x:50%; center-y:50%; width:10; height:10" mesh="rotater_reverse" class="Marker"/>]=]
-local bpGoalEntry       = [=[<Text dimensions="left:0; right:100%; top:0; height:18" style="font:UbuntuMedium_9; valign:center"/>]=]
+--local bpGoalEntry       = [=[<Text dimensions="left:0; right:100%; top:0; height:18" style="font:UbuntuMedium_9; valign:center"/>]=]
 
 ActivityEntry = {}
 ActivityEntry.__index = ActivityEntry

@@ -5,12 +5,13 @@
 
 require "table"
 require "lib/lib_MultiArt"
+require "./ObjectiveEntry"
 
 local skActivityTypeId  = "Activity"
 local skIconGroupId     = "IconGroup"
 local skLabelGroupId    = "LabelGroup"
 local skLabelId         = "Label"
-local skObjectiveLabelId= "ObjectiveLabel"
+local skIconId          = "Icon"
 local skDistanceGroupId = "DistanceGroup"
 local skObjectivesId    = "ObjectiveList"
 
@@ -49,7 +50,7 @@ function ActivityEntry.new( pActivity, pUID, pParent )
     self.mLabelGroup    = self.mIconGroup:GetChild( skLabelGroupId )
     self.mLabel         = self.mLabelGroup:GetChild( skLabelId )
 
-    self.mMultiArt      = MultiArt.Create( self.mIconGroup:GetChild( "Icon" ) )
+    self.mMultiArt      = MultiArt.Create( self.mIconGroup:GetChild( skIconId ) )
     self.mDistanceGroup = self.mGroup:GetChild( skDistanceGroupId )
     self.mDistance      = self.mDistanceGroup:GetChild( skLabelId )
     self.mObjectives    = self.mGroup:GetChild( skObjectivesId )
@@ -160,20 +161,7 @@ end
 -- @param pObjective
 --
 function ActivityEntry:CreateObjective( pObjective )
-    local objective         = {}
-    objective.mWidget       = Component.CreateWidget( skObjectiveLabelId, self.mObjectives )
-
-    if ( objective.mWidget ) then
-        objective.mLabel    = objective.mWidget:GetChild( skLabelId )
-        objective.mLabel:SetFont( "UbuntuRegular_10" )
-
-        objective.mLabel:SetText( tostring( pObjective.description ) )
-
-        local dimensions    = objective.mLabel:GetTextDims()
-        objective.mWidget:SetDims( "right:_; width:" .. dimensions.width .. "; center-y:_; height:" .. dimensions.height )
-    end
-
-    return objective
+    return ObjectiveEntry( pObjective, self.mObjectives )
 end
 
 --- Returns the number of objective widgets

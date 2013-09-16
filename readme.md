@@ -11,5 +11,4 @@ Activitee is also an attempt at some OOP lua.
 Known Issues:
 -------------
 
-* Goals don't work (tracking things from the crafting window)
-* There aren't any settings yet (I'm adding them where fit)
+* There aren't any settings yet (I'm adding them eventually)

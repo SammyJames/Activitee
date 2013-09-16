@@ -450,6 +450,11 @@ function CreateGoalEntry( pLabel, pComplete )
     kGoalWidth = math.max( kGoalWidth, goal:GetTextDims().width )
 end
 
+--- Sets text and changes parent dims.
+-- @param pWidget
+-- @param pText
+-- @param pAlign
+--
 function SetLabelText( pWidget, pText, pAlign )
     pWidget:SetText( tostring( pText ) )
 

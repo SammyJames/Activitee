@@ -5,7 +5,6 @@
 
 require "table"
 require "lib/lib_MultiArt"
-require "./ObjectiveEntry"
 
 local skActivityTypeId  = "Activity"
 local skIconGroupId     = "IconGroup"
@@ -27,8 +26,8 @@ local eMission          = "Mission"
 local bpMarker          = [=[<MapMarker name="Marker" dimensions="center-x:50%; center-y:50%; width:10; height:10" mesh="rotater_reverse" class="Marker"/>]=]
 --local bpGoalEntry       = [=[<Text dimensions="left:0; right:100%; top:0; height:18" style="font:UbuntuMedium_9; valign:center"/>]=]
 
-ActivityEntry = {}
-ActivityEntry.__index = ActivityEntry
+ActivityEntry           = {}
+ActivityEntry.__index   = ActivityEntry
 
 setmetatable( ActivityEntry, { __call = function( cls, ... ) return cls.new( ... ) end, } )
 
@@ -157,11 +156,10 @@ function ActivityEntry:RemoveAllMarkers()
     self.mMarkers = {}
 end
 
---- Creates an Objective
--- @param pObjective
+--- Returns the objective list widget
 --
-function ActivityEntry:CreateObjective( pObjective )
-    return ObjectiveEntry( pObjective, self.mObjectives )
+function ActivityEntry:GetObjectives()
+    return self.mObjectives
 end
 
 --- Returns the number of objective widgets

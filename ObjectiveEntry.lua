@@ -6,8 +6,8 @@
 local skObjectiveLabelId    = "ObjectiveLabel"
 local skLabelId             = "Label"
 
-ObjectiveEntry = {}
-ObjectiveEntry.__index = ObjectiveEntry
+ObjectiveEntry              = {}
+ObjectiveEntry.__index      = ObjectiveEntry
 
 setmetatable( ObjectiveEntry, { __call = function( cls, ... ) return cls.new( ... ) end, } )
 
@@ -36,4 +36,17 @@ function ObjectiveEntry:SetLabel( pText )
 
     local dimensions    = self.mLabel:GetTextDims()
     self.mWidget:SetDims( "right:_; width:" .. dimensions.width .. "; center-y:_; height:" .. dimensions.height )
+end
+
+--- Wrapper
+--
+function ObjectiveEntry:GetBounds()
+    return self.mWidget:GetBounds()
+end
+
+--- Wrapper
+-- @param ...
+--
+function ObjectiveEntry:SetDims( ... )
+    self.mWidget:SetDims( ... )
 end

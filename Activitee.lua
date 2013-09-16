@@ -6,6 +6,7 @@ require "table"
 require "lib/lib_Debug"
 require "lib/lib_Vector"
 require "./ActivityEntry"
+require "./ObjectiveEntry"
 
 local skMainFrameId         = "Main"
 local skActivitiesId        = "Activities"
@@ -131,11 +132,11 @@ function UpdateActivity( pActivity )
             local active = ActiveObjective( objective )
 
             if ( active ) then
-                local obj = activity_display:CreateObjective( objective )
-                local count = activity_display:NumObjectives()
-                local height = obj.mWidget:GetBounds().height
+                local obj       = ObjectiveEntry( objective, activity_display:GetObjectives() )
+                local count     = activity_display:NumObjectives()
+                local height    = obj:GetBounds().height
 
-                obj.mWidget:SetDims( "height:_; center-y:" .. count * height * 2 )
+                obj:SetDims( "height:_; center-y:" .. count * height * 2 )
 
                 activity_display:SetFullHeight( ( count * height * 2 ) + 54 )
                 activity_display:SetDims( "top:_; height:" .. activity_display:GetFullHeight() )

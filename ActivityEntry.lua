@@ -3,6 +3,7 @@
 -- @Date: 9/15/13
 --
 
+require "table"
 require "lib/lib_MultiArt"
 
 local skActivityTypeId  = "Activity"

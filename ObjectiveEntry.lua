@@ -16,7 +16,7 @@ setmetatable( ObjectiveEntry, { __call = function( cls, ... ) return cls.new( ..
 -- @param pParent
 --
 function ObjectiveEntry.new( pObjective, pParent )
-    local self = setmetatable( { }, ObjectiveEntry )
+    local self      = setmetatable( { }, ObjectiveEntry )
     self.mObjective = pObjective
     self.mParent    = pParent
     self.mWidget    = Component.CreateWidget( skObjectiveLabelId, pParent )

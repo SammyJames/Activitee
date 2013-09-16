@@ -7,6 +7,7 @@ require "lib/lib_Debug"
 require "lib/lib_Vector"
 require "./ActivityEntry"
 require "./ObjectiveEntry"
+require "./GoalEntry"
 
 local skMainFrameId         = "Main"
 local skActivitiesId        = "Activities"
@@ -17,6 +18,7 @@ local skGoalMainGroupId     = "GoalMainGroup"
 local skGoalDetailGroupId   = "GoalDetailGroup"
 local skShoppingItemNameId  = "ShoppingItemName"
 local skGoalListId          = "GoalList"
+local skLabelId             = "Label"
 local skDistanceUpdateRate  = 0.1
 local skMinDistance         = 5
 local skMaxDistance         = 10
@@ -36,10 +38,12 @@ local kActivityData         = {}
 local kActivityDisplay      = {}
 local fnDistanceCheck
 local kGoalWidth
+local kGoalIndent           = -1
 local kPlayerPosition       = { x = 0, y = 0, z = 0 }
 
 function Initialize()
     Debug.EnableLogging( true )
+    Debug.Log( "INITIALIZE" )
     kComponentFrame         = Component.GetFrame( skMainFrameId )
     kActivityMainGroup      = Component.GetWidget( skActivityMainGroupId )
     kActivitiesWidget       = Component.GetWidget( skActivitiesId )
@@ -51,6 +55,8 @@ function Initialize()
     kGoalDetailGroup        = Component.GetWidget( skGoalDetailGroupId )
     kGoalList               = Component.GetWidget( skGoalListId )
     kShoppingItemName       = Component.GetWidget( skShoppingItemNameId )
+
+    SetLabelText( kGoalLabel:GetChild( skLabelId ), Component.LookupText( "CURRENT_GOAL" ), "right" )
 end
 
 --- Unique ID for actitivies
@@ -277,18 +283,22 @@ function OnShoppingListUpdated( pArgs )
     kShoppingList   = Player.GetShoppingList()
     kGoalWidth      = 150 --TODO: make this tweakable?
 
-    if ( kShoppingList and kShoppingList[1] ) then
-        local item_info = Game.GetItemInfoByType( kShoppingList[1].item_id )
+    if ( kShoppingList and kShoppingList[ 1 ] ) then
+        local item_info = Game.GetItemInfoByType( kShoppingList[ 1 ].item_id )
+
+        Debug.Table( "Item Info", item_info )
+        Debug.Log( tostring(kShoppingItemName:IsVisible()) )
+
         kGoalIcon:SetUrl( item_info.web_icon )
         kShoppingItemName:SetText( item_info.name )
 
         kGoalWidth = math.max( kGoalWidth, kShoppingItemName:GetTextDims().width )
 
-        --CreateShoppingList()
+        CreateShoppingList()
         kGoalMainGroup:Show()
     else
         kShoppingList = nil
-
+        RemoveAllChildren( kGoalList )
         kGoalMainGroup:Hide()
     end
 end
@@ -346,8 +356,103 @@ function AdjustWidth()
     if ( kSinView ) then
         if ( kShoppingList ) then
             kComponentFrame:MoveTo( "right:_; width:" .. kGoalWidth + 230, duration, 0, "ease-in" )
+            kGoalDetailGroup:SetParam( "alpha", 0 )
+            kGoalDetailGroup:ParamTo( "alpha", 1, duration, duration )
         end
     else
+        kGoalDetailGroup:ParamTo( "alpha", 0, duration, 0 )
         kComponentFrame:MoveTo( "right:_; width:200", duration, duration, "ease-out" )
     end
+end
+
+--- Removes all childen of parent
+-- @param pParent
+--
+function RemoveAllChildren( pParent )
+    for i = pParent:GetChildCount(), 1, -1 do
+        Component.RemoveWidget( kGoalList:GetChild( i ) )
+    end
+end
+
+--- Creates the shopping list for tracked tasks
+--
+function CreateShoppingList()
+    RemoveAllChildren( kGoalList )
+    kGoalIndent = -1
+    ProcessBluePrint( kShoppingList[ 1 ] )
+    kGoalDetailGroup:SetDims( "top:_; height:" .. kGoalList:GetChildCount() * 18 + 106 )
+end
+
+--- Process & Create entries for each item
+-- @param pBlueprint
+--
+function ProcessBluePrint( pBlueprint )
+    local item_info
+    local done
+    local label
+
+    kGoalIndent = kGoalIndent + 1
+
+    if ( pBlueprint.resources ) then
+        for _, resource in ipairs( pBlueprint.resources ) do
+            done        = resource.quantity_have >= resource.quantity_needed
+            label       = resource.loc_resource_name .. ": "
+            if ( resource.loc_stat_name ~= "" ) then
+                label   = label..resource.loc_stat_name .. ": "
+            end
+            label       = label..resource.quantity_have .. "/" .. resource.quantity_needed
+
+            CreateGoalEntry( label, done )
+        end
+    end
+
+    if ( pBlueprint.items ) then
+        for _, item in ipairs( pBlueprint.items ) do
+            item_info   = Game.GetItemInfoByType( item.item_id )
+            done        = item.quantity_have >= item.quantity_needed
+            label       = item_info.name .. ": " .. item.quantity_have .. "/" .. item.quantity_needed
+
+            CreateGoalEntry( label, done )
+
+            if ( not done ) then
+                ProcessBluePrint( item )
+            end
+        end
+    end
+
+    if ( pBlueprint.components ) then
+        for _, component in ipairs( pBlueprint.components ) do
+            item_info   = Game.GetItemInfoByType( component.item_id )
+            done        = component.quantity_have >= component.quantity_needed
+            label       = item_info.name .. ": " .. component.quantity_have .. "/" .. component.
+
+            CreateGoalEntry( label, done )
+
+            if ( not done ) then
+                ProcessBluePrint( component )
+            end
+        end
+    end
+
+    kGoalIndent = kGoalIndent - 1
+end
+
+--- Creates a new goal entry
+-- @param pLabel
+-- @param pComplete
+--
+function CreateGoalEntry( pLabel, pComplete )
+    for i = 1, kGoalIndent do
+        pLabel = " " .. pLabel
+    end
+
+    local goal = GoalEntry( pLabel, pComplete, kGoalList )
+    kGoalWidth = math.max( kGoalWidth, goal:GetTextDims().width )
+end
+
+function SetLabelText( pWidget, pText, pAlign )
+    pWidget:SetText( tostring( pText ) )
+
+    local dimensions = pWidget:GetTextDims()
+    pWidget:GetParent():SetDims( pAlign .. ":_; width:" .. dimensions.width .. "; center-y:_; height:" .. dimensions.height )
 end

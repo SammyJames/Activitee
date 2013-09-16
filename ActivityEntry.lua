@@ -24,7 +24,6 @@ local eMission          = "Mission"
 --]]
 
 local bpMarker          = [=[<MapMarker name="Marker" dimensions="center-x:50%; center-y:50%; width:10; height:10" mesh="rotater_reverse" class="Marker"/>]=]
---local bpGoalEntry       = [=[<Text dimensions="left:0; right:100%; top:0; height:18" style="font:UbuntuMedium_9; valign:center"/>]=]
 
 ActivityEntry           = {}
 ActivityEntry.__index   = ActivityEntry
@@ -36,7 +35,7 @@ setmetatable( ActivityEntry, { __call = function( cls, ... ) return cls.new( ...
 -- @param pUID the unique id of this entry
 --
 function ActivityEntry.new( pActivity, pUID, pParent )
-    local self = setmetatable( { }, ActivityEntry )
+    local self          = setmetatable( { }, ActivityEntry )
     self.mActivityData  = pActivity
     self.mUID           = pUID
     self.mParent        = pParent

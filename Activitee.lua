@@ -398,9 +398,9 @@ function ProcessBluePrint( pBlueprint )
             done        = resource.quantity_have >= resource.quantity_needed
             label       = resource.loc_resource_name .. ": "
             if ( resource.loc_stat_name ~= "" ) then
-                label   = label..resource.loc_stat_name .. ": "
+                label   = label .. resource.loc_stat_name .. ": "
             end
-            label       = label..resource.quantity_have .. "/" .. resource.quantity_needed
+            label       = label .. resource.quantity_have .. "/" .. resource.quantity_needed
 
             CreateGoalEntry( label, done )
         end

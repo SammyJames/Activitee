@@ -8,6 +8,8 @@ require "lib/lib_Vector"
 require "./ActivityEntry"
 require "./ObjectiveEntry"
 require "./GoalEntry"
+require "./Options"
+require "./Fonts"
 
 local skMainFrameId         = "Main"
 local skActivitiesId        = "Activities"
@@ -31,14 +33,85 @@ local kGoalLabel            = Component.GetWidget( skGoalLabelId )
 local kShoppingList         = {}
 local kActivityData         = {}
 local kActivityDisplay      = {}
+local kGoalDisplay          = {}
 local kSinView              = false
 local fnDistanceCheck
 local kGoalIndent           = -1
+local kGoalName             = ""
 local kPlayerPosition       = { x = 0, y = 0, z = 0 }
+local kOptions
 
+--- callback from InterfaceOptions
+-- @param pUID
+-- @param pValue
+--
+function HandleInterfaceCallbac( pUID, pValue )
+    kOptions:HandleInterfaceCallback( pUID, pValue )
+end
+
+--[[
+-- @param pUID
+-- @param pWidth
+-- @param pHeight
+-- @param pTint
+-- @param pTexture
+-- @param pRegion
+-- @param pURL
+-- @param pIcon
+-- @param pAspect
+-- @param pPadding
+-- @param pYOffset
+-- @param pXOffset
+-- @param pOnClick
+ ]]
 function Initialize()
     Debug.EnableLogging( true )
     Debug.Log( "INITIALIZE" )
+
+    kOptions = Options( kComponentFrame, "Activitee", HandleInterfaceCallbac, true, true )
+
+    kOptions:AddMultiArt( "#logo", 325, 75, nil, nil, "http://i.imgur.com/Iq5Ry.png", nil, nil, nil, nil, nil, nil, "http://pawkette.com" )
+    kOptions:StartGroup( "#global", "General Options" )
+    kOptions:AddDropDown( "#titlefont",     "Title Font",       FONTS, "UbuntuMedium_12",   HandleTitleFontChange )
+    kOptions:AddDropDown( "#objectivefont", "Objective Font",   FONTS, "UbuntuRegular_10",  HandleObjectiveFontChange )
+    kOptions:AddDropDown( "#distancefont",  "Distance Font",    FONTS, "UbuntuBold_8",      HandleDistanceFontChange )
+    kOptions:StopGroup()
+
+    Debug.Log( kOptions:GetValue( "#test" ) )
+end
+
+---
+-- @param pFont
+--
+function HandleTitleFontChange( pFont )
+    kGoalLabel:GetChild( skLabelId ):SetFont( pFont )
+    SetLabelText( kGoalLabel:GetChild( skLabelId ), kGoalName, "right" )
+
+    for _,activity in pairs( kActivityDisplay ) do
+        activity:SetTitleFont( pFont )
+    end
+end
+
+---
+-- @param pFont
+--
+function HandleObjectiveFontChange( pFont )
+    for _,goal in pairs( kGoalDisplay ) do
+        goal:SetFont( pFont )
+    end
+
+    for _,activity in pairs( kActivityDisplay ) do
+       activity:SetObjectiveFont( pFont )
+    end
+end
+
+---
+-- @param pFont
+--
+function HandleDistanceFontChange( pFont )
+    for _,activity in pairs( kActivityDisplay ) do
+        activity:SetDistanceFont( pFont )
+    end
 end
 
 --- Unique ID for actitivies
@@ -109,7 +182,7 @@ function UpdateActivity( pActivity )
         local activity_display = kActivityDisplay[ key ]
 
         if ( not activity_display ) then
-            activity_display = ActivityEntry( pActivity, key, kActivitiesWidget )
+            activity_display = ActivityEntry( pActivity, key, kActivitiesWidget, kOptions )
             kActivityDisplay[ key ] = activity_display
         else
             activity_display:RemoveAllMarkers()
@@ -120,11 +193,13 @@ function UpdateActivity( pActivity )
             local active = ActiveObjective( objective )
 
             if ( active ) then
-                local obj       = ObjectiveEntry( objective, activity_display:GetObjectives() )
+                local obj       = ObjectiveEntry( objective, activity_display:GetObjectives(), kOptions )
                 local count     = activity_display:NumObjectives()
                 local height    = obj:GetBounds().height
 
                 obj:SetDims( "height:_; center-y:" .. count * height * 2 )
+
+                activity_display:AddObjective( obj )
 
                 activity_display:SetFullHeight( ( count * height * 2 ) + 54 )
                 activity_display:SetDims( "top:_; height:" .. activity_display:GetFullHeight() )
@@ -266,7 +341,8 @@ function OnShoppingListUpdated( pArgs )
     if ( kShoppingList and kShoppingList[ 1 ] ) then
         local item_info = Game.GetItemInfoByType( kShoppingList[ 1 ].item_id )
         kGoalIcon:SetUrl( item_info.web_icon )
-        SetLabelText( kGoalLabel:GetChild( skLabelId ), item_info.name, "right" )
+        kGoalName       = item_info.name
+        SetLabelText( kGoalLabel:GetChild( skLabelId ), kGoalName, "right" )
 
         CreateShoppingList()
         kGoalMainGroup:Show()
@@ -274,8 +350,9 @@ function OnShoppingListUpdated( pArgs )
         local dimensions    = kGoalList:GetDims( true )
         kActivityMainGroup:MoveTo( "left:0; width:200; center-y:_; bottom:100%; top:" .. dimensions.bottom.offset, 2, 0, "ease-in" )
     else
-        kShoppingList = nil
+        kShoppingList   = nil
         RemoveAllChildren( kGoalList )
+        kGoalDisplay    = {}
         kGoalMainGroup:Hide()
     end
 end
@@ -336,7 +413,8 @@ end
 --
 function CreateShoppingList()
     RemoveAllChildren( kGoalList )
-    kGoalIndent = -1
+    kGoalDisplay    = {}
+    kGoalIndent     = -1
     ProcessBluePrint( kShoppingList[ 1 ] )
 end
 
@@ -404,7 +482,7 @@ function CreateGoalEntry( pLabel, pComplete )
     end
 
     --feels gross to just new this up
-    local obj       = GoalEntry( pLabel, pComplete, kGoalList )
+    local obj       = GoalEntry( pLabel, pComplete, kGoalList, kOptions )
     local count     = kGoalList:GetChildCount()
     local height    = obj:GetBounds().height
 
@@ -412,6 +490,8 @@ function CreateGoalEntry( pLabel, pComplete )
 
     kGoalList:SetDims( "top:_; height:" .. ( count * height * 2 ) + 54 )
     kGoalList:Show()
+
+    table.insert( kGoalDisplay, obj )
 end
 
 --- Sets text and changes parent dims.

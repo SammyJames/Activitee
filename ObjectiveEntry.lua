@@ -15,14 +15,14 @@ setmetatable( ObjectiveEntry, { __call = function( cls, ... ) return cls.new( ..
 -- @param pObjective
 -- @param pParent
 --
-function ObjectiveEntry.new( pObjective, pParent )
+function ObjectiveEntry.new( pObjective, pParent, pOptions )
     local self      = setmetatable( { }, ObjectiveEntry )
     self.mObjective = pObjective
     self.mParent    = pParent
     self.mWidget    = Component.CreateWidget( skObjectiveLabelId, pParent )
     self.mLabel     = self.mWidget:GetChild( skLabelId )
 
-    self.mLabel:SetFont( "UbuntuRegular_10" )
+    self.mLabel:SetFont( pOptions:GetValue( "#objectivefont" ) )
     self:SetLabel( tostring( pObjective.description ) )
 
     return self
@@ -49,4 +49,9 @@ end
 --
 function ObjectiveEntry:SetDims( ... )
     self.mWidget:SetDims( ... )
+end
+
+function ObjectiveEntry:SetFont( pFont )
+    self.mLabel:SetFont( pFont )
+    self:SetLabel( self.mObjective.description )
 end

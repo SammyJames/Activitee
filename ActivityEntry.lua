@@ -34,12 +34,13 @@ setmetatable( ActivityEntry, { __call = function( cls, ... ) return cls.new( ...
 -- @param pActivity the activity data table
 -- @param pUID the unique id of this entry
 --
-function ActivityEntry.new( pActivity, pUID, pParent )
+function ActivityEntry.new( pActivity, pUID, pParent, pOptions )
     local self          = setmetatable( { }, ActivityEntry )
     self.mActivityData  = pActivity
     self.mUID           = pUID
     self.mParent        = pParent
     self.mFullHeight    = 0
+    self.mDistanceVal   = 0
 
     self.mWidget         = Component.CreateWidget( skActivityTypeId, pParent )
     self.mWidget:SetDims( "top:_; height:48" )
@@ -53,11 +54,13 @@ function ActivityEntry.new( pActivity, pUID, pParent )
     self.mDistance      = self.mDistanceGroup:GetChild( skLabelId )
     self.mObjectives    = self.mWidget:GetChild( skObjectivesId )
     self.mMarkers       = {}
+    self.mObjectiveData = {}
 
-    self.mDistance:SetFont( "UbuntuBold_8" )
-    self.mLabel:SetFont( "UbuntuMedium_12" )
+    self.mDistance:SetFont( pOptions:GetValue( "#distancefont" ) )
+    self.mLabel:SetFont( pOptions:GetValue( "#titlefont" ) )
 
     self:SetLabel( pActivity.title )
+    self:SetDistance( self.mDistanceVal )
 
     if ( pActivity.icon ) then
         self.mMultiArt:SetIcon( pActivity.icon )
@@ -88,6 +91,7 @@ end
 -- @param pDistance
 --
 function ActivityEntry:SetDistance( pDistance )
+    self.mDistanceVal = pDistance
     if ( pDistance ~= 0 ) then
         self.mDistance:SetText( tostring( Component.LookupText( "DISTANCE_IN_METERS", pDistance ) ) )
         self.mDistanceGroup:Show()
@@ -173,6 +177,10 @@ function ActivityEntry:GetObjectives()
     return self.mObjectives
 end
 
+function ActivityEntry:AddObjective( pObjective )
+    table.insert( self.mObjectiveData, pObjective )
+end
+
 --- Returns the number of objective widgets
 --
 function ActivityEntry:NumObjectives()
@@ -182,6 +190,7 @@ end
 --- Removes all objectives
 --
 function ActivityEntry:RemoveAllObjectives()
+    self.mObjectiveData = {}
     self:RemoveAllChildren( self.mObjectives )
 end
 
@@ -230,4 +239,20 @@ end
 --
 function ActivityEntry:SetDims( ... )
     self.mWidget:SetDims( ... )
+end
+
+function ActivityEntry:SetTitleFont( pFont )
+    self.mLabel:SetFont( pFont )
+    self:SetLabel( self.mActivityData.title )
+end
+
+function ActivityEntry:SetDistanceFont( pFont )
+    self.mDistance:SetFont( pFont )
+    self:SetDistance( self.mDistanceVal )
+end
+
+function ActivityEntry:SetObjectiveFont( pFont )
+    for _,objective in pairs( self.mObjectiveData ) do
+       objective:SetFont( pFont )
+    end
 end

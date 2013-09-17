@@ -11,14 +11,15 @@ GoalEntry.__index   = GoalEntry
 
 setmetatable( GoalEntry, { __call = function( cls, ... ) return cls.new( ... ) end, } )
 
-function GoalEntry.new( pLabel, pComplete, pParent )
+function GoalEntry.new( pLabel, pComplete, pParent, pOptions )
     local self      = setmetatable( { }, GoalEntry )
     self.mParent    = pParent
     self.mComplete  = false
+    self.mText      = pLabel
     self.mWidget    = Component.CreateWidget( skObjectiveId, pParent )
     self.mLabel     = self.mWidget:GetChild( skLabelId )
 
-    self.mLabel:SetFont( "UbuntuRegular_10" )
+    self.mLabel:SetFont( pOptions:GetValue( "#objectivefont" ) )
 
     self:SetLabel( pLabel )
     self:SetComplete( pComplete )
@@ -68,4 +69,12 @@ end
 --
 function GoalEntry:SetDims( ... )
     self.mWidget:SetDims( ... )
+end
+
+---
+-- @param pFont
+--
+function GoalEntry:SetFont( pFont )
+    self.mLabel:SetFont( pFont )
+    self:SetLabel( self.mText )
 end

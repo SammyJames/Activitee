@@ -45,7 +45,7 @@ local kOptions
 -- @param pUID
 -- @param pValue
 --
-function HandleInterfaceCallbac( pUID, pValue )
+function HandleInterfaceCallback( pUID, pValue )
     kOptions:HandleInterfaceCallback( pUID, pValue )
 end
 
@@ -55,7 +55,7 @@ function Initialize()
     Debug.EnableLogging( false )
     Debug.Log( "INITIALIZE" )
 
-    kOptions = Options( kComponentFrame, "Activitee", HandleInterfaceCallbac, true, true )
+    kOptions = Options( kComponentFrame, "Activitee", HandleInterfaceCallback, true, true )
     --kOptions:AddMultiArt( "#logo", 325, 75, nil, nil, "http://i.imgur.com/Iq5Ry.png", nil, nil, nil, nil, nil, nil, "http://pawkette.com" )
     kOptions:StartGroup( "#global", "General Options" )
     kOptions:AddDropDown( "#titlefont",     "Title Font",       FONTS, "UbuntuMedium_12",   HandleTitleFontChange )

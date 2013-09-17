@@ -11,4 +11,4 @@ Activitee is also an attempt at some OOP lua.
 Known Issues:
 -------------
 
-* There aren't any settings yet (I'm adding them eventually)
+* None, ftw <3

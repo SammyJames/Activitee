@@ -26,7 +26,6 @@
 
     <Textures>
         <Texture name="IconBorder" src="components/MainUI/Addons/Activitee/art/icon_border.png" premultiplied="false"/>
-        <Texture name="Logo" src="components/MainUI/Addons/Activitee/art/logo.png" premultiplied="false"/>
     </Textures>
 
     <Styles>

@@ -49,35 +49,20 @@ function HandleInterfaceCallbac( pUID, pValue )
     kOptions:HandleInterfaceCallback( pUID, pValue )
 end
 
---[[
--- @param pUID
--- @param pWidth
--- @param pHeight
--- @param pTint
--- @param pTexture
--- @param pRegion
--- @param pURL
--- @param pIcon
--- @param pAspect
--- @param pPadding
--- @param pYOffset
--- @param pXOffset
--- @param pOnClick
- ]]
+--- Initialize the things!
+--
 function Initialize()
-    Debug.EnableLogging( true )
+    Debug.EnableLogging( false )
     Debug.Log( "INITIALIZE" )
 
     kOptions = Options( kComponentFrame, "Activitee", HandleInterfaceCallbac, true, true )
-
-    kOptions:AddMultiArt( "#logo", 325, 75, nil, nil, "http://i.imgur.com/Iq5Ry.png", nil, nil, nil, nil, nil, nil, "http://pawkette.com" )
+    --kOptions:AddMultiArt( "#logo", 325, 75, nil, nil, "http://i.imgur.com/Iq5Ry.png", nil, nil, nil, nil, nil, nil, "http://pawkette.com" )
     kOptions:StartGroup( "#global", "General Options" )
     kOptions:AddDropDown( "#titlefont",     "Title Font",       FONTS, "UbuntuMedium_12",   HandleTitleFontChange )
     kOptions:AddDropDown( "#objectivefont", "Objective Font",   FONTS, "UbuntuRegular_10",  HandleObjectiveFontChange )
     kOptions:AddDropDown( "#distancefont",  "Distance Font",    FONTS, "UbuntuBold_8",      HandleDistanceFontChange )
     kOptions:StopGroup()
 
-    Debug.Log( kOptions:GetValue( "#test" ) )
 end
 
 ---
